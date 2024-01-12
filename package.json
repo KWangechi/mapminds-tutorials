@@ -1,0 +1,21 @@
+{
+  "name": "openlayers-javascript",
+  "version": "1.0.0",
+  "description": "A tutorial project for creating a web mao using OpenLayers",
+  "main": "main.js",
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "openlayers",
+    "vite"
+  ],
+  "author": "Wangechi Karanja <https://github.com/KWangechi>",
+  "license": "MIT",
+  "dependencies": {
+    "ol": "^8.2.0",
+    "vite": "^5.0.11"
+  }
+}
