@@ -7,7 +7,23 @@
     <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
-    <div id="map"></div>
+    <div id="map">
+    </div>
+    <!-- Add a search functionality, depending on some data -->
+    <div id="search_container">
+        <h4 class="title">Search</h4>
+        <label for="area_label" class="area_label">Search By: Area</label>
+        <input type="text" id="search" class="search" placeholder="Search...">
+
+        <button type="submit" class="search_button">Search</button>
+        <!-- <select name="area" id="area">
+            <option value="area">Nairobi</option>
+            <option value="area">Mombasa</option>
+            <option value="area">Kisumu</option>
+        </select> -->
+    
+    </div>
 </body>
-<script src="./main.js" type="module"></script>
+<script src="https://requirejs.org/docs/release/2.3.5/minified/require.js"></script>
+<script type="module" src="./main.js"></script>
 </html>
