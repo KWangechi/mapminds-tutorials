@@ -21,7 +21,8 @@ body {
   color: black;
   border-radius: 15px;
   width: 370px;
-  height: 150px;
+  height: max-content;
+  padding-bottom: 20px;
 
 }
 .title {
@@ -34,7 +35,6 @@ body {
 
 .search {
   width: 50%;
-  margin-left: 20px;
   height: 25px;
   border-radius: 8px;
   margin-bottom: 15px;
@@ -53,4 +53,16 @@ button {
 
 h3 {
   text-align: center;
+}
+
+#spinner {
+  display: none;
+  visibility: hidden;
+}
+
+.ta_list {
+  display: none;
+  visibility: hidden;
+  margin-bottom: 5px;
+  margin-top: 10px;
 }
