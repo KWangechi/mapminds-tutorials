@@ -22,31 +22,23 @@
     <div id="map"></div>
 
     <!-- Add a search functionality, depending on some data -->
-    <div id="search_container">
-      <h4 class="title">Search</h4>
-      <label for="area_label" class="area_label">Search By Name:</label>
-      <input type="text" id="search" class="search" placeholder="Search..." />
-
-      <!-- //clear button -->
-
-      <button type="submit" class="search_button" id="search_button">
-        Search
-      </button>
-      <!-- <select name="area" id="area">
-            <option value="area">Nairobi</option>
-            <option value="area">Mombasa</option>
-            <option value="area">Kisumu</option>
-        </select> -->
-
-      <!-- Add a spinner class if searching -->
-      <div class="spinner-border" role="status" id="spinner">
-        Searching...
-        <span class="visually-hidden">Loading...</span>
+    <div class="card" id="card">
+      <h5 class="card-header">Search</h5>
+      <div class="card-body">
+        <label for="search_label" class="col-form-label search_label"
+          >Search By Name</label
+        >
+        <input type="text" id="search" class="form-control form-control-md" />
+        <button
+          type="submit"
+          class="btn btn-primary text-center search_button"
+          id="search_button"
+          style="margin-top: 10px"
+        >
+          Go
+        </button>
+        <ul class="ta_list" id="ta_list"></ul>
       </div>
-      <div class="" id="spinner"></div>
-
-      <!-- display the list of national parks found -->
-      <ul class="ta_list" id="ta_list"></ul>
     </div>
   </body>
   <script src="https://requirejs.org/docs/release/2.3.5/minified/require.js"></script>

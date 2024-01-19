@@ -90,17 +90,13 @@ let properties = [];
  * @param {Array} features 
  */
 function getFeaturesByName(features) {
-    if(properties.length > 0) {
+    if (properties.length > 0) {
         properties = [];
     }
 
     // set the visibility of the spinner button
     let spinner = document.getElementById("spinner");
-    // search_item.style.color = 'red';
 
-    spinner.style.display = "block";
-    spinner.style.visibility = "visible";
-    
     console.log(spinner);
 
     features.forEach(element => {
@@ -111,7 +107,7 @@ function getFeaturesByName(features) {
         if (typeof property.name == 'object') {
             if (Object.values(property).includes(search_item.value)) {
 
-                properties.push([property.amenity]);
+                properties.push(property.amenity);
 
                 console.log('Found a match of the object!! with id: ' + property.osm_id);
             }
@@ -120,23 +116,23 @@ function getFeaturesByName(features) {
         if (property.name == search_item.value) {
 
             console.log('Found a match!! with id: ' + property.osm_id);
-            properties.push([property.amenity]);
+            properties.push(property.amenity);
         }
+
+
     });
 
     console.log('Searching complete...');
     console.log(properties);
 
-    spinner.style.visibility = "hidden";
-    spinner.style.display = "none";
-
-    if(list.childNodes.length > 0) {
+    if (list.childNodes.length > 0) {
         console.log(list.lastChild);
 
         list.lastChild.remove();
     }
 
-    if(properties.length === 0) {
+    if (properties.length === 0) {
+        search_item.style.color = 'red';
         list.append("Results not found!!!");
     }
 
@@ -146,9 +142,8 @@ function getFeaturesByName(features) {
         const l1 = document.createElement("li");
         const l2 = document.createTextNode(`${p}`);
         l1.appendChild(l2);
-       
+
         console.log(list.childNodes.length)
-        
 
         // console.log(l1);
 
@@ -167,6 +162,7 @@ searchButton.addEventListener('click', () => {
 
     getFeaturesByName(features);
 });
+
 
 // call all the methods
 createOverlay(map);
