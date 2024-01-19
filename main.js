@@ -95,9 +95,9 @@ function getFeaturesByName(features) {
     }
 
     // set the visibility of the spinner button
-    let spinner = document.getElementById("spinner");
+    // let spinner = document.getElementById("spinner");
 
-    console.log(spinner);
+    // console.log(spinner);
 
     features.forEach(element => {
         const property = element.getProperties();
@@ -117,6 +117,16 @@ function getFeaturesByName(features) {
 
             console.log('Found a match!! with id: ' + property.osm_id);
             properties.push(property.amenity);
+
+            // display that feature now
+            // 1. First clear the vectorSource
+            vectorSource.clear();
+            console.log(element);
+
+            vectorSource.addFeature(element);
+            console.log(vectorSource);
+
+
         }
 
 
