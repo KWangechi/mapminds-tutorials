@@ -15,6 +15,10 @@
       integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
       crossorigin="anonymous"
     ></script>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    />
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
@@ -25,10 +29,19 @@
     <div class="card" id="card">
       <h5 class="card-header">Search</h5>
       <div class="card-body">
-        <label for="search_label" class="col-form-label search_label"
-          >Search By Name</label
-        >
-        <input type="text" id="search" class="form-control form-control-md" />
+        <div class="input-group mb-2 mt-2">
+          <input
+            type="text"
+            id="search"
+            class="form-control form-control-md"
+            placeholder="Search By Name"
+          />
+          <span class="input-group-text" id="basic-addon1">
+            <button class="btn px-2" id="close_btn">
+              <i class="bi bi-x-lg"></i>
+            </button>
+          </span>
+        </div>
         <button
           type="submit"
           class="btn btn-primary text-center search_button"
@@ -36,6 +49,14 @@
           style="margin-top: 10px"
         >
           Go
+        </button>
+
+        <button
+          type="button"
+          class="btn btn-secondary text-end reset_map_button mt-2 mx-5"
+          id="reset_map_button"
+        >
+         Reset Map
         </button>
         <ul class="ta_list" id="ta_list"></ul>
       </div>
