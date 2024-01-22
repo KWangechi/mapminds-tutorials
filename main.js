@@ -112,8 +112,17 @@ function searchFeaturesByName(features) {
             // 1. First clear the vectorSource
             vectorSource.clear();
 
-            // add the feature and zoom to it
+            // // check if the properties are in an array
+            // if(properties.length == 1) {
+            //     if(element.equals(property)) {
+
+            //     }
+            //     // add the feature and zoom to it
+
+            // }
+
             vectorSource.addFeature(element);
+            // vectorSource.addFeatures(properties);
 
             let coordinates = element.getGeometry().getCoordinates();
             console.log(coordinates);
@@ -151,9 +160,17 @@ function searchFeaturesByName(features) {
         list.style.display = "block";
     }
 
+    if (properties.length > 1) {
+
+        // delete all the prior nodes
+        while (list.firstChild) {
+            list.removeChild(list.firstChild);
+        }
+    }
+
     properties.forEach((p) => {
         if (list.childNodes.length > 1) {
-            console.log('Child nodes detected!!');
+            console.log(list.childNodes.length);
         }
 
         const l1 = document.createElement("li");
@@ -165,15 +182,6 @@ function searchFeaturesByName(features) {
         list.style.visibility = "visible";
         list.style.display = "block";
     });
-
-    const nodes = list.childNodes;
-    console.log(nodes.length);
-
-    console.log(`${list} has ${list.childNodes.length} children`);
-
-    if (nodes.length > 1) {
-        // delete all the nodes and 
-    }
 
 }
 
@@ -190,7 +198,6 @@ searchButton.addEventListener("click", () => {
 // clear the input and remove the list element
 clearBtn.addEventListener("click", () => {
     const childNodes = list.childNodes;
-    // console.log(childNodes);
 
     if (childNodes.length > 1) {
 
@@ -200,32 +207,30 @@ clearBtn.addEventListener("click", () => {
         }
 
         //clear the vector Source and add the other features
-        vectorSource.clear();
-
-        vectorSource.addFeatures(features);
-
-        search_item.value = "";
+        resetMap(features);
     }
 
 
-    list.removeChild(childNodes[0]);
+    else {
 
-    console.log("DOM is cleared...");
+        list.removeChild(childNodes[0]);
 
-    //clear the vector Source and add the other features
-    vectorSource.clear();
+        console.log("DOM is cleared...");
 
-    vectorSource.addFeatures(features);
-
-    search_item.value = "";
+        //clear the vector Source and add the other features
+        resetMap(features);
+    }
 });
 
 /**
  * Reset Map to it's previous state
  */
-function resetMap() {
+function resetMap(oldFeatures) {
+    vectorSource.clear();
+    vectorSource.addFeatures(oldFeatures);
+    search_item.value = "";
+
     console.log("Map has been reset...");
-    console.log(map.getLayers())
 }
 
 resetMapBtn.addEventListener("click", resetMap);
