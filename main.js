@@ -79,6 +79,8 @@ let resetMapBtn = document.getElementById("reset_map_button");
 
 let searching = false;
 let properties = [];
+const elements = [];
+
 
 /**
  *
@@ -107,22 +109,13 @@ function searchFeaturesByName(features) {
         if (property.name == search_item.value) {
             console.log("Found a match!! with id: " + property.osm_id);
             properties.push(property);
+            elements.push(element);
 
             // display that feature now
             // 1. First clear the vectorSource
             vectorSource.clear();
 
-            // // check if the properties are in an array
-            // if(properties.length == 1) {
-            //     if(element.equals(property)) {
-
-            //     }
-            //     // add the feature and zoom to it
-
-            // }
-
-            vectorSource.addFeature(element);
-            // vectorSource.addFeatures(properties);
+            // vectorSource.addFeatures(elements);
 
             let coordinates = element.getGeometry().getCoordinates();
             console.log(coordinates);
@@ -138,6 +131,24 @@ function searchFeaturesByName(features) {
             console.log(vectorSource);
         }
     });
+
+    console.log(elements);
+
+    if (elements.length == 1) {
+        vectorSource.clear();
+
+        while (!vectorSource.hasFeature(elements[0])) {
+            vectorSource.addFeature(elements[0]);
+        }
+    }
+
+    vectorSource.clear();
+
+    // elements.forEach((el => {
+    //     vectorSource.addFeature(el);
+    // }))
+
+    vectorSource.addFeatures(elements);
 
     console.log("Searching complete...");
     console.log(properties);
