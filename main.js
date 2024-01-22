@@ -193,13 +193,20 @@ clearBtn.addEventListener("click", () => {
     // console.log(childNodes);
 
     if (childNodes.length > 1) {
-        childNodes.forEach((node) => {
-            console.log(node);
-            list.removeChild(node);
-        });
+
+        // delete all at once
+        while (list.firstChild) {
+            list.removeChild(list.firstChild);
+        }
+
+        //clear the vector Source and add the other features
+        vectorSource.clear();
+
+        vectorSource.addFeatures(features);
+
+        search_item.value = "";
     }
 
-    //   console.log(childNodes[0]);
 
     list.removeChild(childNodes[0]);
 
