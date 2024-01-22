@@ -9,19 +9,19 @@ import VectorLayer from "ol/layer/Vector";
 import { Circle, Fill, Stroke, Style } from "ol/style";
 
 const map = new Map({
-  target: "map",
-  layers: [
-    new TileLayer({
-      source: new OSM(),
+    target: "map",
+    layers: [
+        new TileLayer({
+            source: new OSM(),
+        }),
+    ],
+    view: new View({
+        projection: "EPSG:4326",
+        center: fromLonLat([37.9083264, 0.1768696], "EPSG:4326"),
+        zoom: 6,
+        minZoom: 2,
+        maxZoom: 20,
     }),
-  ],
-  view: new View({
-    projection: "EPSG:4326",
-    center: fromLonLat([37.9083264, 0.1768696], "EPSG:4326"),
-    zoom: 6,
-    minZoom: 2,
-    maxZoom: 20,
-  }),
 });
 
 console.log("Map initializing...");
@@ -37,26 +37,26 @@ features = features.slice(0, 1000);
 const vectorSource = new VectorSource();
 
 const image = new Circle({
-  radius: 7,
-  stroke: new Stroke({ color: "red", width: 2 }),
+    radius: 7,
+    stroke: new Stroke({ color: "red", width: 2 }),
 });
 
 // style the feature
 features.forEach((feature) => {
-  const style = new Style({
-    image: image,
-  });
+    const style = new Style({
+        image: image,
+    });
 
-  // console.log(feature);
-  vectorSource.addFeature(feature);
+    // console.log(feature);
+    vectorSource.addFeature(feature);
 
-  feature.setStyle(style);
+    feature.setStyle(style);
 });
 
 console.log(vectorSource);
 
 const vectorLayer = new VectorLayer({
-  source: vectorSource,
+    source: vectorSource,
 });
 
 console.log(vectorSource.getFeatures().length);
@@ -65,7 +65,7 @@ map.addLayer(vectorLayer);
 
 // create an overlay to show the some info about the place
 function createOverlay(map) {
-  console.log("Create Overlay");
+    console.log("Create Overlay");
 }
 
 // search functionality
@@ -85,128 +85,140 @@ let properties = [];
  * @param {Array} features
  */
 function searchFeaturesByName(features) {
-  if (properties.length > 0) {
-    properties = [];
-  }
-
-  features.forEach((element) => {
-    const property = element.getProperties();
-
-    // console.log(property.name);
-
-    if (typeof property.name == "object") {
-      if (Object.values(property).includes(search_item.value)) {
-        properties.push(property.amenity);
-
-        console.log(
-          "Found a match of the object!! with id: " + property.osm_id
-        );
-      }
+    if (properties.length > 0) {
+        properties = [];
     }
 
-    if (property.name == search_item.value) {
-      console.log("Found a match!! with id: " + property.osm_id);
-      properties.push(property.amenity);
+    features.forEach((element) => {
+        const property = element.getProperties();
 
-      // display that feature now
-      // 1. First clear the vectorSource
-      vectorSource.clear();
+        // console.log(property.name);
 
-      // add the feature and zoom to it
-      vectorSource.addFeature(element);
+        if (typeof property.name == "object") {
+            if (Object.values(property).includes(search_item.value)) {
+                properties.push(property.amenity);
 
-      let coordinates = element.getGeometry().getCoordinates();
-      console.log(coordinates);
+                console.log(
+                    "Found a match of the object!! with id: " + property.osm_id
+                );
+            }
+        }
 
-      map.setView(
-        new View({
-          projection: "EPSG:4326",
-          center: fromLonLat([coordinates[0], coordinates[1]], "EPSG:4326"),
-          zoom: 10,
-        })
-      );
+        if (property.name == search_item.value) {
+            console.log("Found a match!! with id: " + property.osm_id);
+            properties.push(property);
 
-      console.log(vectorSource);
+            // display that feature now
+            // 1. First clear the vectorSource
+            vectorSource.clear();
+
+            // add the feature and zoom to it
+            vectorSource.addFeature(element);
+
+            let coordinates = element.getGeometry().getCoordinates();
+            console.log(coordinates);
+
+            map.setView(
+                new View({
+                    projection: "EPSG:4326",
+                    center: fromLonLat([coordinates[0], coordinates[1]], "EPSG:4326"),
+                    zoom: 10,
+                })
+            );
+
+            console.log(vectorSource);
+        }
+    });
+
+    console.log("Searching complete...");
+    console.log(properties);
+
+    if (list.childNodes.length == 1) {
+
+        // remove all the child nodes if more than
+        console.log(list.lastChild);
+
+        list.lastChild.remove();
+
     }
-  });
 
-  console.log("Searching complete...");
-  console.log(properties);
+    if (properties.length === 0) {
+        list.append("Results not found!");
 
-  console.log(`${list} has ${list.childNodes.length} children`);
+        console.log(list);
 
-  if (list.childNodes.length > 0) {
-    console.log(list.lastChild);
+        list.style.visibility = "visible";
+        list.style.display = "block";
+    }
 
-    list.lastChild.remove();
-  }
+    properties.forEach((p) => {
+        if (list.childNodes.length > 1) {
+            console.log('Child nodes detected!!');
+        }
 
-  if (properties.length === 0) {
-    search_item.style.color = "red";
+        const l1 = document.createElement("li");
+        const l2 = document.createTextNode(`Location: ${p.addrstreet}`);
+        l1.appendChild(l2);
 
-    list.append("Results not found!");
+        list.appendChild(l1);
 
-    console.log(list);
+        list.style.visibility = "visible";
+        list.style.display = "block";
+    });
 
-    list.style.visibility = "visible";
-    list.style.display = "block";
-  }
-  properties.forEach((p) => {
+    const nodes = list.childNodes;
+    console.log(nodes.length);
 
-    
-    const l1 = document.createElement("li");
-    const l2 = document.createTextNode(`${p}`);
-    l1.appendChild(l2);
+    console.log(`${list} has ${list.childNodes.length} children`);
 
-    console.log(list.childNodes.length);
+    if (nodes.length > 1) {
+        // delete all the nodes and 
+    }
 
-    list.appendChild(l1);
-
-    list.style.visibility = "visible";
-    list.style.display = "block";
-  });
 }
 
 searchButton.addEventListener("click", () => {
-  searching = true;
+    searching = true;
 
-  console.log(`Searching for ${search_item.value}: ......`);
+    console.log(`Searching for ${search_item.value}: ......`);
 
-  searchFeaturesByName(features);
-  searching = false;
+    searchFeaturesByName(features);
+    searching = false;
 });
 
 
 // clear the input and remove the list element
 clearBtn.addEventListener("click", () => {
-  const childNodes = list.childNodes;
-  if (childNodes.length > 1) {
-    childNodes.forEach((node) => {
-      node.remove();
-    });
-  }
+    const childNodes = list.childNodes;
+    // console.log(childNodes);
 
-  console.log(childNodes[0]);
+    if (childNodes.length > 1) {
+        childNodes.forEach((node) => {
+            console.log(node);
+            list.removeChild(node);
+        });
+    }
 
-  list.removeChild(childNodes[0]);
+    //   console.log(childNodes[0]);
 
-  console.log("DOM is cleared...");
+    list.removeChild(childNodes[0]);
 
-  //clear the vector Source and add the other features
-  vectorSource.clear();
+    console.log("DOM is cleared...");
 
-//   getFeaturesByName(features);
+    //clear the vector Source and add the other features
+    vectorSource.clear();
 
-  search_item.value = "";
+    vectorSource.addFeatures(features);
+
+    search_item.value = "";
 });
 
 /**
  * Reset Map to it's previous state
  */
 function resetMap() {
-  console.log("Map has been reset...");
-//  map.getLayers()[1]
-console.log(map.getLayers())
+    console.log("Map has been reset...");
+    console.log(map.getLayers())
 }
 
 resetMapBtn.addEventListener("click", resetMap);

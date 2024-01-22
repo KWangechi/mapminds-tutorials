@@ -3,7 +3,7 @@
 html,
 body {
   margin: 0;
-  height: 100%;
+  height: 90%;
 }
 
 #map {
@@ -72,7 +72,7 @@ h3 {
   position: absolute; 
   top: 50px;
   left: 50px;
-  width: 18rem;
+  width: max-content;
 }
 
 .reset_map_button {
