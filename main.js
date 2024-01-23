@@ -1,23 +1,237 @@
 import Map from "ol/Map";
 import View from "ol/View";
-import OSM from 'ol/source/OSM';
+import OSM from "ol/source/OSM";
 import TileLayer from "ol/layer/Tile";
 import { fromLonLat } from "ol/proj";
+import GeoJSON from "ol/format/GeoJSON";
+import VectorSource, { VectorSourceEvent } from "ol/source/Vector";
+import VectorLayer from "ol/layer/Vector";
+import { Circle, Fill, Stroke, Style } from "ol/style";
 
-
-new Map({
+const map = new Map({
     target: "map",
     layers: [
         new TileLayer({
-            source: new OSM()
-        })
+            source: new OSM(),
+        }),
     ],
     view: new View({
-        center: fromLonLat([37.9083264, 0.1768696]),
+        projection: "EPSG:4326",
+        center: fromLonLat([37.9083264, 0.1768696], "EPSG:4326"),
         zoom: 6,
         minZoom: 2,
-        maxZoom: 20
-    })
+        maxZoom: 20,
+    }),
 });
 
-console.log('Test Map...');
+console.log("Map initializing...");
+
+const result = await fetch("./tourist_attractions.geojson");
+const data = await result.json();
+
+let features = new GeoJSON().readFeatures(data);
+
+// just get the 1st 1000 features
+features = features.slice(0, 1000);
+
+const vectorSource = new VectorSource();
+
+const image = new Circle({
+    radius: 7,
+    stroke: new Stroke({ color: "red", width: 2 }),
+});
+
+// style the feature
+features.forEach((feature) => {
+    const style = new Style({
+        image: image,
+    });
+
+    // console.log(feature);
+    vectorSource.addFeature(feature);
+
+    feature.setStyle(style);
+});
+
+// console.log(vectorSource);
+
+const vectorLayer = new VectorLayer({
+    source: vectorSource,
+});
+
+console.log(vectorSource.getFeatures().length);
+
+map.addLayer(vectorLayer);
+
+// create an overlay to show the some info about the place
+function createOverlay(map) {
+    console.log("Create Overlay");
+}
+
+// search functionality
+let searchButton = document.querySelector("#search_button");
+let search_item = document.getElementById("search");
+let list = document.getElementById("ta_list");
+let clearBtn = document.getElementById("close_btn");
+let resetMapBtn = document.getElementById("reset_map_button");
+// let closeSpan = document.getElementById("basic-addon1");
+
+let searching = false;
+let properties = [];
+let elements = [];
+
+/**
+ *
+ * @param {Array} features
+ */
+function searchFeaturesByName(features) {
+    if (properties.length > 0) {
+        properties = [];
+    }
+
+    features.forEach((element) => {
+        const property = element.getProperties();
+
+        // console.log(property.name);
+
+        if (typeof property.name == "object") {
+            if (Object.values(property).includes(search_item.value)) {
+                properties.push(property.amenity);
+
+                console.log(
+                    "Found a match of the object!! with id: " + property.osm_id
+                );
+            }
+        }
+
+        if (property.name == search_item.value) {
+            console.log("Found a match!! with id: " + property.osm_id);
+            properties.push(property);
+
+
+            if (!elements.includes(element)) {
+                elements.push(element);
+                
+                console.log("After pushing new values... ");
+                console.log(elements);
+            }
+            console.log('The length of the elements array is: ' + elements.length);
+
+            // display that feature now
+            // 1. First clear the vectorSource
+            vectorSource.clear();
+
+            let coordinates = element.getGeometry().getCoordinates();
+            console.log(coordinates);
+
+            map.setView(
+                new View({
+                    projection: "EPSG:4326",
+                    center: fromLonLat([coordinates[0], coordinates[1]], "EPSG:4326"),
+                    zoom: 10,
+                })
+            );
+        }
+    });
+
+
+    if (elements.length == 1) {
+        if (!vectorSource.hasFeature(elements[0])) {
+            vectorSource.clear();
+            vectorSource.addFeature(elements[0]);
+        }
+    }
+    console.log("Searching complete...");
+    console.log(properties);
+
+    vectorSource.clear();
+    vectorSource.addFeatures(elements);
+
+    elements = [];
+
+    if (list.childNodes.length == 1) {
+
+        // remove all the child nodes if more than
+        console.log(list.lastChild);
+
+        list.lastChild.remove();
+    }
+
+    if (properties.length === 0) {
+        list.append("Results not found!");
+
+        console.log(list);
+
+        list.style.visibility = "visible";
+        list.style.display = "block";
+    }
+
+    if (properties.length > 1) {
+        // delete all the prior nodes
+        while (list.firstChild) {
+            list.removeChild(list.firstChild);
+        }
+    }
+
+    properties.forEach((p) => {
+        if (list.childNodes.length > 1) {
+            console.log('Elements array: ' + elements.length);
+            console.log('Properties array: ' + properties.length);
+
+            console.log(list.childNodes.length);
+        }
+
+        const l1 = document.createElement("li");
+        const l2 = document.createTextNode(`Location: ${p.addrstreet}`);
+        l1.appendChild(l2);
+
+        list.appendChild(l1);
+
+        list.style.visibility = "visible";
+        list.style.display = "block";
+    });
+}
+
+searchButton.addEventListener("click", () => {
+    searching = true;
+
+    console.log(`Searching for ${search_item.value}: ......`);
+
+    searchFeaturesByName(features);
+    searching = false;
+});
+
+// clear the input and remove the list element
+clearBtn.addEventListener("click", () => {
+    const childNodes = list.childNodes;
+
+    if (childNodes.length > 1) {
+        // delete all at once
+        while (list.firstChild) {
+            list.removeChild(list.firstChild);
+        }
+
+        //clear the vector Source and add the other features
+        resetMap(features);
+    } else {
+        list.removeChild(childNodes[0]);
+
+        console.log("DOM is cleared...");
+
+        //clear the vector Source and add the other features
+        resetMap(features);
+    }
+});
+
+/**
+ * Reset Map to it's previous state
+ */
+function resetMap(oldFeatures) {
+    vectorSource.clear();
+    vectorSource.addFeatures(oldFeatures);
+    search_item.value = "";
+
+    console.log("Map has been reset...");
+}
+
+resetMapBtn.addEventListener("click", resetMap);
