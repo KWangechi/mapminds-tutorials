@@ -9,19 +9,19 @@ import VectorLayer from "ol/layer/Vector";
 import { Circle, Fill, Stroke, Style } from "ol/style";
 
 const map = new Map({
-    target: "map",
-    layers: [
-        new TileLayer({
-            source: new OSM(),
-        }),
-    ],
-    view: new View({
-        projection: "EPSG:4326",
-        center: fromLonLat([37.9083264, 0.1768696], "EPSG:4326"),
-        zoom: 6,
-        minZoom: 2,
-        maxZoom: 20,
+  target: "map",
+  layers: [
+    new TileLayer({
+      source: new OSM(),
     }),
+  ],
+  view: new View({
+    projection: "EPSG:4326",
+    center: fromLonLat([37.9083264, 0.1768696], "EPSG:4326"),
+    zoom: 6,
+    minZoom: 2,
+    maxZoom: 20,
+  }),
 });
 
 console.log("Map initializing...");
@@ -37,26 +37,26 @@ features = features.slice(0, 1000);
 const vectorSource = new VectorSource();
 
 const image = new Circle({
-    radius: 7,
-    stroke: new Stroke({ color: "red", width: 2 }),
+  radius: 7,
+  stroke: new Stroke({ color: "red", width: 2 }),
 });
 
 // style the feature
 features.forEach((feature) => {
-    const style = new Style({
-        image: image,
-    });
+  const style = new Style({
+    image: image,
+  });
 
-    // console.log(feature);
-    vectorSource.addFeature(feature);
+  // console.log(feature);
+  vectorSource.addFeature(feature);
 
-    feature.setStyle(style);
+  feature.setStyle(style);
 });
 
 // console.log(vectorSource);
 
 const vectorLayer = new VectorLayer({
-    source: vectorSource,
+  source: vectorSource,
 });
 
 console.log(vectorSource.getFeatures().length);
@@ -65,7 +65,7 @@ map.addLayer(vectorLayer);
 
 // create an overlay to show the some info about the place
 function createOverlay(map) {
-    console.log("Create Overlay");
+  console.log("Create Overlay");
 }
 
 // search functionality
@@ -85,153 +85,146 @@ let elements = [];
  * @param {Array} features
  */
 function searchFeaturesByName(features) {
-    if (properties.length > 0) {
-        properties = [];
+  if (properties.length > 0) {
+    properties = [];
+  }
+
+  features.forEach((element) => {
+    const property = element.getProperties();
+
+    // console.log(property.name);
+
+    if (typeof property.name == "object") {
+      if (Object.values(property).includes(search_item.value)) {
+        properties.push(property.amenity);
+
+        console.log(
+          "Found a match of the object!! with id: " + property.osm_id
+        );
+      }
     }
 
-    features.forEach((element) => {
-        const property = element.getProperties();
+    if (property.name == search_item.value) {
+      console.log("Found a match!! with id: " + property.osm_id);
+      properties.push(property);
 
-        // console.log(property.name);
+      if (!elements.includes(element)) {
+        elements.push(element);
+      }
+      console.log("The length of the elements array is: " + elements.length);
 
-        if (typeof property.name == "object") {
-            if (Object.values(property).includes(search_item.value)) {
-                properties.push(property.amenity);
+      // display that feature now
+      // 1. First clear the vectorSource
+      vectorSource.clear();
 
-                console.log(
-                    "Found a match of the object!! with id: " + property.osm_id
-                );
-            }
-        }
+      let coordinates = element.getGeometry().getCoordinates();
+      // console.log(coordinates);
 
-        if (property.name == search_item.value) {
-            console.log("Found a match!! with id: " + property.osm_id);
-            properties.push(property);
-
-
-            if (!elements.includes(element)) {
-                elements.push(element);
-                
-                console.log("After pushing new values... ");
-                console.log(elements);
-            }
-            console.log('The length of the elements array is: ' + elements.length);
-
-            // display that feature now
-            // 1. First clear the vectorSource
-            vectorSource.clear();
-
-            let coordinates = element.getGeometry().getCoordinates();
-            console.log(coordinates);
-
-            map.setView(
-                new View({
-                    projection: "EPSG:4326",
-                    center: fromLonLat([coordinates[0], coordinates[1]], "EPSG:4326"),
-                    zoom: 10,
-                })
-            );
-        }
-    });
-
-
-    if (elements.length == 1) {
-        if (!vectorSource.hasFeature(elements[0])) {
-            vectorSource.clear();
-            vectorSource.addFeature(elements[0]);
-        }
+      map.setView(
+        new View({
+          projection: "EPSG:4326",
+          center: fromLonLat([coordinates[0], coordinates[1]], "EPSG:4326"),
+          zoom: 10,
+        })
+      );
     }
-    console.log("Searching complete...");
-    console.log(properties);
+  });
 
-    vectorSource.clear();
-    vectorSource.addFeatures(elements);
-
-    elements = [];
-
-    if (list.childNodes.length == 1) {
-
-        // remove all the child nodes if more than
-        console.log(list.lastChild);
-
-        list.lastChild.remove();
+  if (elements.length == 1) {
+    if (!vectorSource.hasFeature(elements[0])) {
+      vectorSource.clear();
+      vectorSource.addFeature(elements[0]);
     }
+  }
+  console.log("Searching complete...");
+  console.log(properties);
 
-    if (properties.length === 0) {
-        list.append("Results not found!");
+  vectorSource.clear();
+  vectorSource.addFeatures(elements);
 
-        console.log(list);
+  elements = [];
 
-        list.style.visibility = "visible";
-        list.style.display = "block";
+  if (list.childNodes.length == 1) {
+    // remove all the child nodes if more than
+    console.log(list.lastChild);
+
+    list.lastChild.remove();
+  }
+
+  if (properties.length === 0) {
+    list.append("Results not found!");
+
+    // console.log(list);
+
+    list.style.visibility = "visible";
+    list.style.display = "block";
+  }
+
+  if (properties.length > 1) {
+    // delete all the prior nodes
+    while (list.firstChild) {
+      list.removeChild(list.firstChild);
     }
+  }
 
-    if (properties.length > 1) {
-        // delete all the prior nodes
-        while (list.firstChild) {
-            list.removeChild(list.firstChild);
-        }
+  if (list.childNodes.length > 1) {
+    while (list.firstChild) {
+      list.removeChild(list.firstChild);
     }
+  }
 
-    properties.forEach((p) => {
-        if (list.childNodes.length > 1) {
-            console.log('Elements array: ' + elements.length);
-            console.log('Properties array: ' + properties.length);
+  properties.forEach((p) => {
+    const l1 = document.createElement("li");
+    const l2 = document.createTextNode(`Location: ${p.addrstreet}`);
+    l1.appendChild(l2);
 
-            console.log(list.childNodes.length);
-        }
+    list.appendChild(l1);
 
-        const l1 = document.createElement("li");
-        const l2 = document.createTextNode(`Location: ${p.addrstreet}`);
-        l1.appendChild(l2);
-
-        list.appendChild(l1);
-
-        list.style.visibility = "visible";
-        list.style.display = "block";
-    });
+    list.style.visibility = "visible";
+    list.style.display = "block";
+  });
 }
 
 searchButton.addEventListener("click", () => {
-    searching = true;
+  searching = true;
 
-    console.log(`Searching for ${search_item.value}: ......`);
+  console.log(`Searching for ${search_item.value}: ......`);
 
-    searchFeaturesByName(features);
-    searching = false;
+  searchFeaturesByName(features);
+  searching = false;
 });
 
 // clear the input and remove the list element
 clearBtn.addEventListener("click", () => {
-    const childNodes = list.childNodes;
+  const childNodes = list.childNodes;
 
-    if (childNodes.length > 1) {
-        // delete all at once
-        while (list.firstChild) {
-            list.removeChild(list.firstChild);
-        }
-
-        //clear the vector Source and add the other features
-        resetMap(features);
-    } else {
-        list.removeChild(childNodes[0]);
-
-        console.log("DOM is cleared...");
-
-        //clear the vector Source and add the other features
-        resetMap(features);
+  if (childNodes.length > 1) {
+    // delete all at once
+    while (list.firstChild) {
+      list.removeChild(list.firstChild);
     }
+
+    //clear the vector Source and add the other features
+    resetMap(features);
+  } else {
+    list.removeChild(childNodes[0]);
+
+    console.log("DOM is cleared...");
+
+    //clear the vector Source and add the other features
+    resetMap(features);
+  }
 });
 
 /**
  * Reset Map to it's previous state
  */
 function resetMap(oldFeatures) {
-    vectorSource.clear();
-    vectorSource.addFeatures(oldFeatures);
-    search_item.value = "";
+  vectorSource.clear();
+  vectorSource.addFeatures(oldFeatures);
+  search_item.value = "";
 
-    console.log("Map has been reset...");
+  console.log("Map has been reset...");
 }
 
 resetMapBtn.addEventListener("click", resetMap);
