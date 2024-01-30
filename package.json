@@ -16,9 +16,7 @@
   "author": "Wangechi Karanja <https://github.com/KWangechi>",
   "license": "MIT",
   "dependencies": {
-    "node": "^21.2.0",
     "ol": "^8.2.0",
-    "require": "^2.4.20",
     "vite": "^5.0.11"
   }
 }
