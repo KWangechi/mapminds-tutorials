@@ -8,6 +8,8 @@ import VectorSource, { VectorSourceEvent } from "ol/source/Vector";
 import VectorLayer from "ol/layer/Vector";
 import { Circle, Stroke, Style } from "ol/style";
 
+
+async function initializeMap() {
 const map = new Map({
     target: "map",
     layers: [
@@ -38,7 +40,7 @@ const vectorSource = new VectorSource();
 
 const image = new Circle({
     radius: 7,
-    stroke: new Stroke({ color: "#fca903", width: 1.5 }),
+    stroke: new Stroke({ color: "#CF5D45", width: 1.5 }),
 });
 
 // style the feature
@@ -60,3 +62,6 @@ const vectorLayer = new VectorLayer({
 console.log(vectorSource.getFeatures().length);
 
 map.addLayer(vectorLayer);
+}
+
+initializeMap();
