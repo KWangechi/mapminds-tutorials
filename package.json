@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "A tutorial project for creating a web mao using OpenLayers",
   "main": "main.js",
-  "type": "module",
   "scripts": {
     "dev": "vite dev",
     "build": "vite build",
@@ -16,7 +15,10 @@
   "author": "Wangechi Karanja <https://github.com/KWangechi>",
   "license": "MIT",
   "dependencies": {
+    "express": "^4.18.2",
+    "json-server": "^1.0.0-alpha.23",
     "ol": "^8.2.0",
+    "require": "^0.4.4",
     "vite": "^5.0.11"
   }
 }

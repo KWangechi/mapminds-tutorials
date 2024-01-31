@@ -28,9 +28,10 @@ const map = new Map({
 
 console.log("Map initializing...");
 
-const result = await fetch("./kenya_pois.geojson");
+const result = await fetch("/api/kenya-pois");
 const data = await result.json();
 
+// console.log(data);
 let features = new GeoJSON().readFeatures(data);
 
 // just get the 1st 1000 features
